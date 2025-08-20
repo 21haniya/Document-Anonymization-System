@@ -1,0 +1,9 @@
+belgeanon_env/belgeanon/_pycache_
+Lib
+Scripts
+db.sqlite3
+belgeanon_env/belgeanon/__pycache__
+başlatma_icin.txt
+belgeanon_env/sistem/__pycache__
+belgeanon_env/sistem/migrations
+media

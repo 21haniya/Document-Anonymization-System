@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Log Kayıtları</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 100px auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            text-align: center;
+            color: #343a40;
+            margin-bottom: 25px;
+            font-size: 20px;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+            color: #333;
+        }
+
+        li {
+            background-color: #f1f1f1;
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>📋 Log Kayıtları – {{ makale.takip_numarasi }}</h2>
+
+        {% if loglar %}
+        <ul>
+            {% for log in loglar %}
+                <li>{{ log.zaman|date:"d M Y H:i" }} – {{ log.islem }}</li>
+            {% endfor %}
+        </ul>
+        {% else %}
+            <p style="text-align:center; color:#c0392b;">❌ Herhangi bir log kaydı bulunamadı.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

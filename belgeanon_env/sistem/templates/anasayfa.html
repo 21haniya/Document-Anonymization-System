@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Makale Sistemi Giriş</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 14px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+        }
+
+        h2 {
+            margin-bottom: 30px;
+            color: #343a40;
+            font-size: 22px;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            margin: 10px auto;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            color: white;
+            background-color: #f4a261;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #e88e45;
+        }
+
+        /* Modal stilleri */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.4);
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 14px;
+            width: 320px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #343a40;
+            text-align: center;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 22px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: #555;
+        }
+
+        input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2> Makale Sistemi</h2>
+        <a href="{% url 'makale_yukle' %}"><button class="btn"> Yazar Girişi</button></a>
+        <a href="{% url 'editor_paneli' %}"><button class="btn"> Editör Girişi</button></a>
+        <button class="btn" onclick="openModal()">👨‍⚖️ Hakem Girişi</button>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="hakemModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>Hakem Girişi</h3>
+            <form method="post" action="{% url 'hakem_giris' %}">
+                {% csrf_token %}
+                <label for="email">E-posta:</label>
+                <input type="email" name="email" required>
+                <button class="btn" type="submit">Giriş Yap</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById('hakemModal').style.display = 'flex';
+        }
+        function closeModal() {
+            document.getElementById('hakemModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

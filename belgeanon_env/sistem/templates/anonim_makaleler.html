@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Anonimleştirilmiş Makaleler</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 80px 20px 40px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            text-align: center;
+            color: #343a40;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f4a261;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        a {
+            color: #f4a261;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #777;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .disabled {
+            color: #aaa;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #f4a261;
+            padding: 10px 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 7px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 8px;
+            color: white;
+        }
+        
+        .badge-success {
+            background-color: #2a9d8f;
+        }
+        
+        .badge-warning {
+            background-color: #e76f51;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="{% url 'anasayfa' %}">🏠 Ana Sayfa</a>
+    </nav>
+
+    <div class="container">
+        <h1>🕵️ Anonimleştirilmiş Makaleler Listesi</h1>
+
+        {% if anonim_makaleler %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Takip Numarası</th>
+                    <th>PDF</th>
+                    <th>Hakem Atama</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for makale in anonim_makaleler %}
+                <tr>
+                    <td>{{ makale.takip_numarasi }}</td>
+                    <td>
+                        {% if makale.anonim_pdf %}
+                            <a href="{{ makale.anonim_pdf.url }}" download>İndir</a>
+                        {% else %}
+                            <span style="color:red;">Yok</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if makale.anonim_pdf %}
+                            <a href="{% url 'hakem_oner' makale.takip_numarasi %}">Hakem Ata</a>
+                        {% else %}
+                            <span class="disabled">Önce anonimleştirin</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="no-data">Henüz anonimleştirilmiş makale bulunmuyor.</p>
+        {% endif %}
+    </div>
+
+    {% if request.GET.atama == "ok" %}
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <p>✅ Hakemler başarıyla atandı!</p>
+            <button onclick="document.getElementById('successModal').style.display='none';">Tamam</button>
+        </div>
+    </div>
+    <style>
+    .modal {
+        position: fixed;
+        z-index: 9999;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .modal-content {
+        background: #ffffff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        text-align: center;
+    }
+    .modal-content p {
+        font-size: 16px;
+        margin-bottom: 20px;
+        color: #2e7d32;
+        font-weight: bold;
+    }
+    .modal-content button {
+        background-color: #f4a261;
+        border: none;
+        padding: 10px 20px;
+        color: white;
+        font-size: 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    .modal-content button:hover {
+        background-color: #e88e45;
+    }
+    </style>
+    {% endif %}
+
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>🧾 Tüm Log Kayıtları</title>
+    <style>
+        body { font-family: 'Segoe UI'; background: #f8f9fa; padding: 40px; }
+        h1 { text-align: center; color: #333; margin-bottom: 30px; }
+        table { width: 100%; border-collapse: collapse; background: #fff; }
+        th, td { padding: 12px; text-align: center; border-bottom: 1px solid #ddd; }
+        th { background-color: #f4a261; color: white; }
+    </style>
+</head>
+<body>
+    <h1>🧾 Tüm Log Kayıtları (Gruplanmış)</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Takip Numarası</th>
+                <th>İşlemler</th>
+                <th>Tarihler</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for takip_no, log in log_dict.items %}
+            <tr>
+                <td>{{ takip_no }}</td>
+                <td>
+                    {% for islem in log.islemler %}
+                        {{ islem }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for zaman in log.tarihler %}
+                        {{ zaman|date:"d M H:i" }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3">Hiç log bulunamadı.</td></tr>
+            {% endfor %}
+        </tbody>
+        
+    </table>
+</body>
+</html>

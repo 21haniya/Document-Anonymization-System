@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Hakem Atama</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 80px 0 0; /* navbar için üst boşluk */
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #f4a261;
+            padding: 10px 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            text-align: center;
+            color: #343a40;
+            margin-bottom: 25px;
+            font-size: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        label {
+            font-size: 15px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="checkbox"] {
+            accent-color: #f4a261;
+        }
+
+        button {
+            background-color: #f4a261;
+            color: white;
+            padding: 10px;
+            font-size: 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #e88e45;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="{% url 'editor_paneli' %}">↩️ Editör Paneline Dön</a>
+    </nav>
+
+    <div class="container">
+        <h2>👤 {{ makale.takip_numarasi }} Numaralı Makale İçin Hakem Atama</h2>
+
+        <form method="post">
+            {% csrf_token %}
+            {% for hakem in hakemler %}
+                <label>
+                    <input type="checkbox" name="hakemler" value="{{ hakem.id }}">
+                    {{ hakem.ad }} — {{ hakem.uzmanlik_alanlari.all|join:", " }}
+                </label>
+            {% endfor %}
+
+            <button type="submit">Hakemleri Ata</button>
+        </form>
+    </div>
+</body>
+</html>
+s

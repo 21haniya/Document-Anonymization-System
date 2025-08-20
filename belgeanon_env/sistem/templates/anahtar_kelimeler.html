@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Anahtar Kelimeler</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 100px auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            text-align: center;
+            color: #343a40;
+            margin-bottom: 25px;
+            font-size: 20px;
+        }
+
+        ul {
+            list-style-type: disc;
+            padding-left: 30px;
+            color: #333;
+        }
+
+        li {
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        p {
+            text-align: center;
+            color: #c0392b;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📌 {{ makale.takip_numarasi }} için Anahtar Kelimeler</h1>
+
+        {% if keywords %}
+            <ul>
+                {% for kw in keywords %}
+                    <li>{{ kw }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>❌ Herhangi bir anahtar kelime bulunamadı.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

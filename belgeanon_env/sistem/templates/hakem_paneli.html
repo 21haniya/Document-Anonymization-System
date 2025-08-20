@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Değerlendirilecek Makaleler</title>
+    <style>
+       body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f8f9fa;
+        margin: 0;
+        padding: 80px 20px 40px; /* navbar için yukarı boşluk */
+    }
+
+
+        .container {
+            max-width: 700px;
+            margin: 100px auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            text-align: center;
+            color: #343a40;
+            margin-bottom: 25px;
+            font-size: 20px;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            background-color: #f1f1f1;
+            margin-bottom: 12px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .info {
+            flex: 1;
+        }
+
+        .actions a {
+            margin-left: 15px;
+            color: #f4a261;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .actions a:hover {
+            text-decoration: underline;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #c0392b;
+            font-weight: 500;
+        }
+
+        /* Modal stilleri */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 10px;
+            position: relative;
+            max-height: 90%;
+            overflow-y: auto;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            cursor: pointer;
+            font-size: 22px;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #f4a261;
+            padding: 10px 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 7px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 8px;
+            color: white;
+        }
+        
+        .badge-success {
+            background-color: #2a9d8f;
+        }
+        
+        .badge-warning {
+            background-color: #e76f51;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="{% url 'anasayfa' %}">🏠 Ana Sayfa</a>
+    </nav>
+
+
+    <div class="container">
+        <h2>📄 {{ hakem.ad }} - Değerlendirilecek Makaleler</h2>
+
+        {% if iliskiler %}
+        <ul>
+            {% for iliski in iliskiler %}
+            <li>
+                <div class="info">
+                    {{ iliski.makale.takip_numarasi }}
+                    {% if iliski.durum == "Değerlendirildi" %}
+                        <span class="badge badge-success">Değerlendirildi</span>
+                    {% else %}
+                        <span class="badge badge-warning">Bekliyor</span>
+                    {% endif %}
+                </div>
+                <div class="actions">
+                    {% if iliski.durum == "Değerlendirildi" %}
+                        <a href="{{ iliski.reviewed_pdf.url }}" download>📥 Değerlendirilen PDF</a>
+                    {% else %}
+                        <a href="{{ iliski.makale.anonim_pdf.url }}" download>📥 PDF'yi indir</a>
+                        <a href="#" onclick="openModal('{{ iliski.makale.takip_numarasi }}', '{{ iliski.hakem.slug }}')">📝 Değerlendir</a>
+                    {% endif %}
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="no-data">❌ Bu hakeme atanmış makale bulunamadı.</p>
+        {% endif %}
+    </div>
+
+    <!-- Modal -->
+    <div id="degerlendirModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modalBody">Yükleniyor...</div>
+        </div>
+    </div>
+
+    <script>
+    function openModal(takip_no, slug) {
+        fetch(`/degerlendir/${takip_no}/${slug}/`)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById("modalBody").innerHTML = html;
+                document.getElementById("degerlendirModal").style.display = "flex";
+
+                // 🎯 Modal içeriği yüklendikten sonra form olayını bağla
+                setTimeout(() => {
+                    const form = document.getElementById("degerlendirmeForm");
+                    if (form) {
+                        form.addEventListener("submit", function (e) {
+                            e.preventDefault();
+
+                            const formData = new FormData(form);
+                            const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
+                            const yorum = form.querySelector("#yorum").value;
+                            const submitBtn = form.querySelector("button");
+                            const successAlert = document.getElementById("successAlert");
+                            const errorAlert = document.getElementById("errorAlert");
+                            const loading = document.getElementById("loading");
+
+                            // UI güncelle
+                            if (submitBtn) submitBtn.disabled = true;
+                            if (loading) loading.style.display = "block";
+                            if (successAlert) successAlert.style.display = "none";
+                            if (errorAlert) errorAlert.style.display = "none";
+
+                            fetch(form.action, {
+                                method: "POST",
+                                body: formData,
+                                headers: {
+                                    "X-Requested-With": "XMLHttpRequest",
+                                    "X-CSRFToken": csrfToken
+                                }
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (loading) loading.style.display = "none";
+
+                                if (data.success) {
+                                    if (successAlert) successAlert.style.display = "block";
+                                    if (submitBtn) submitBtn.disabled = true;
+                                    if (form.querySelector("#yorum")) {
+                                        form.querySelector("#yorum").disabled = true;
+                                    }
+
+                                    setTimeout(() => {
+                                        closeModal();
+                                        window.location.reload();
+                                    }, 2000);
+                                } else {
+                                    if (errorAlert) {
+                                        errorAlert.textContent = "❌ Hata: " + data.message;
+                                        errorAlert.style.display = "block";
+                                    }
+                                    if (submitBtn) submitBtn.disabled = false;
+                                }
+                            })
+                            .catch(err => {
+                                if (loading) loading.style.display = "none";
+                                if (errorAlert) {
+                                    errorAlert.textContent = "⚠️ Bağlantı hatası: " + err.message;
+                                    errorAlert.style.display = "block";
+                                }
+                                if (submitBtn) submitBtn.disabled = false;
+                            });
+                        });
+                    }
+                }, 100); // DOM yüklensin diye küçük gecikme
+            });
+    }
+
+    function closeModal() {
+        document.getElementById("degerlendirModal").style.display = "none";
+    }
+    </script>
+
+
+</body>
+</html>

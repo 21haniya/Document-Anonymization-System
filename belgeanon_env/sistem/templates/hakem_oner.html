@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Hakem Önerisi</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 80px 20px 40px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 100px auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        h2, h3 {
+            text-align: center;
+            color: #343a40;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            list-style-type: disc;
+            padding-left: 30px;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        li {
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        label {
+            font-size: 15px;
+            color: #555;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        input[type="checkbox"] {
+            margin-top: 3px;
+            accent-color: #f4a261;
+        }
+
+        button {
+            background-color: #f4a261;
+            color: white;
+            padding: 10px;
+            font-size: 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #e88e45;
+        }
+
+        p {
+            text-align: center;
+            color: #c0392b;
+        }
+
+        .modal {
+            position: fixed;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .modal-content p {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        .modal-content button {
+            background-color: #f4a261;
+            border: none;
+            padding: 10px 20px;
+            color: white;
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .modal-content button:hover {
+            background-color: #e88e45;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #f4a261;
+            padding: 10px 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 7px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 8px;
+            color: white;
+        }
+        
+        .badge-success {
+            background-color: #2a9d8f;
+        }
+        
+        .badge-warning {
+            background-color: #e76f51;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="{% url 'anasayfa' %}">🏠 Ana Sayfa</a>
+    </nav>
+
+
+    <div class="container">
+
+        <h2>👥 Hakem Önerisi – {{ makale.takip_numarasi }}</h2>
+
+        <h3>Makale Anahtar Kelimeleri:</h3>
+        <ul>
+            {% for k in keywords %}
+                <li>{{ k }}</li>
+            {% endfor %}
+        </ul>
+
+        <h3>Eşleşen Uzmanlık Alanları:</h3>
+        <ul>
+            {% for alan in alanlar %}
+                <li>{{ alan.ana_baslik }} – {{ alan.alt_baslik }}</li>
+            {% endfor %}
+        </ul>
+
+        <form method="post">
+            {% csrf_token %}
+            <h3>Önerilen Hakemler:</h3>
+            {% for hakem in hakemler %}
+                <label>
+                    <input type="checkbox" name="hakemler" value="{{ hakem.id }}">
+                    {{ hakem.ad }} — 
+                    <i>
+                        {% for alan in hakem.uzmanlik_alanlari.all %}
+                            {{ alan.ana_baslik }} / {{ alan.alt_baslik }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </i>
+                </label>
+            {% empty %}
+                <p>❌ Uygun hakem bulunamadı.</p>
+            {% endfor %}
+            <button type="submit">Seçilen Hakemleri Ata</button>
+        </form>
+
+        <!-- Modal kutusu -->
+        {% if atama_basarili %}
+        <div class="modal" id="successModal">
+            <div class="modal-content">
+                <p>✅ Hakemler başarıyla atandı!</p>
+                <button onclick="closeModal()">Tamam</button>
+            </div>
+        </div>
+        {% endif %}
+        
+    </div>
+
+
+    <script>
+      function closeModal() {
+          document.getElementById("successModal").style.display = "none";
+      }
+      </script>
+      
+</body>
+</html>

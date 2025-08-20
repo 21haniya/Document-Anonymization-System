@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Makale Değerlendirme</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .evaluation-container {
+            width: 500px;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        a {
+            color: #f4a261;
+            text-decoration: none;
+            font-weight: 500;
+            display: block;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            resize: vertical;
+            box-sizing: border-box;
+            min-height: 200px;
+        }
+
+        button {
+            background-color: #f4a261;
+            color: white;
+            padding: 10px;
+            font-size: 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #e88e45;
+        }
+
+        .alert {
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .alert-success {
+            background-color: #d1e7dd;
+            color: #0f5132;
+            border: 1px solid #badbcc;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #842029;
+            border: 1px solid #f5c2c7;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="evaluation-container">
+        <h2>{{ hakem.ad }} – {{ makale.takip_numarasi }} Numaralı Makale Değerlendirmesi</h2>
+
+        <a href="{{ makale.anonim_pdf.url }}" download>📄 PDF'yi İndir</a>
+
+        <div id="successAlert" class="alert alert-success">
+            ✅ Değerlendirme başarıyla kaydedildi.
+        </div>
+
+        <div id="errorAlert" class="alert alert-danger">
+            ❌ Bir hata oluştu.
+        </div>
+
+        <form id="degerlendirmeForm" action="{% url 'makale_degerlendir' makale.takip_numarasi hakem.slug %}">
+            {% csrf_token %}
+            <label for="yorum">Değerlendirme:</label>
+            <textarea name="yorum" id="yorum" rows="10" placeholder="Değerlendirmenizi yazınız..." required></textarea>
+            <div id="loading" class="loading">İşleniyor...</div>
+            <button type="submit" id="submitBtn">Gönder</button>
+        </form>
+    </div>
+</body>
+</html>

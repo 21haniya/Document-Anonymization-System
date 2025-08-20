@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Makale Yükle</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navbar sabit üstte */
+        .navbar {
+            background-color: #f4a261;
+            padding: 10px 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+        }
+
+        .nav-container {
+            width: 90%;   
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 60px;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+
+        /* İçerik kutusu */
+        .main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-top: 100px; /* navbar boşluğu */
+            min-height: calc(100vh - 60px);
+        }
+
+        .form-container {
+            width: 380px;
+            background: #ffffff;
+            padding: 25px 30px;
+            border-radius: 14px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #343a40;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        form p {
+            margin-bottom: 12px;
+        }
+
+        input[type="file"],
+        input[type="text"],
+        input[type="email"],
+        textarea,
+        select {
+            padding: 8px 10px;
+            font-size: 14px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #f4a261;
+            color: white;
+            padding: 10px;
+            font-size: 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #e88e45;
+        }
+
+        .success-message {
+            background-color: #e9f8ec;
+            color: #2e7d32;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 15px;
+            border: 1px solid #c3e6cb;
+            font-size: 14px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">📚 Makale Sistemi</a>
+            <div class="nav-links">
+                <a href="/makale-yukle">Makale Yükle</a>
+                <a href="/makale-durumu">Durumu Sorgula</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- İçerik -->
+    <div class="main">
+        <div class="form-container">
+            <h1>Makale Yükle</h1>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Yükle</button>
+            </form>
+
+            {% if takip_numarasi %}
+                <div class="success-message">
+                    Makaleniz yüklendi!<br>
+                    Takip Numaranız: <strong>{{ takip_numarasi }}</strong>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
